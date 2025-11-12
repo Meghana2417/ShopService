@@ -25,7 +25,7 @@ pipeline {
       steps {
         withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CREDENTIALS}", usernameVariable: 'USER', passwordVariable: 'PASS')]) {
           sh """
-          echo $PASS | docker login -u $USER --password-stdin
+          echo "$PASS" | docker login -u "$USER" --password-stdin
           docker tag ${IMAGE_NAME}:${BUILD_NUMBER} ${IMAGE_NAME}:latest
           docker push ${IMAGE_NAME}:${BUILD_NUMBER}
           docker push ${IMAGE_NAME}:latest
@@ -40,8 +40,8 @@ pipeline {
         sshagent (credentials: ['deploy-ssh-key']) {
           withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CREDENTIALS}", usernameVariable: 'USER', passwordVariable: 'PASS')]) {
             sh """
-            ssh -o StrictHostKeyChecking=no ubuntu@13.235.90.226 '
-              echo $PASS | docker login -u $USER --password-stdin &&
+            ssh -o StrictHostKeyChecking=no ubuntu@13.232.241.165 '
+              echo "$PASS" | docker login -u "$USER" --password-stdin &&
               cd /home/ubuntu/deployments/shopservice &&
               docker-compose -f docker-compose.prod.yml pull &&
               docker-compose -f docker-compose.prod.yml up -d
