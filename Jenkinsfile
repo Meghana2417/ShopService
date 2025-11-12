@@ -5,7 +5,7 @@ pipeline {
     DOCKERHUB_CREDENTIALS = 'docker-hub-creds'
     DOCKERHUB_USER = 'meghana1724'     // change to your DockerHub username
     IMAGE_NAME = "${DOCKERHUB_USER}/shopservice"
-    DEPLOY_SERVER = 'ec2-prod-server'   // SSH credentials ID in Jenkins
+   SSH_CRED_ID = 'deploy-ssh-key' 
   }
 
   stages {
