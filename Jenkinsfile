@@ -3,9 +3,9 @@ pipeline {
 
   environment {
     DOCKERHUB_CREDENTIALS = 'docker-hub-creds'
-    DOCKERHUB_USER = 'meghana1724'     // change to your DockerHub username
+    DOCKERHUB_USER = 'meghana1724'
     IMAGE_NAME = "${DOCKERHUB_USER}/shopservice"
-   SSH_CRED_ID = 'deploy-ssh-key' 
+    SSH_CRED_ID = 'deploy-ssh-key'
   }
 
   stages {
@@ -17,9 +17,7 @@ pipeline {
 
     stage('Build Docker Image') {
       steps {
-        script {
-          sh "docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} ."
-        }
+        sh "docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} ."
       }
     }
 
@@ -40,14 +38,16 @@ pipeline {
     stage('Deploy to Production') {
       steps {
         sshagent (credentials: ['deploy-ssh-key']) {
-          sh """
-          ssh -o StrictHostKeyChecking=no ubuntu@13.235.90.226 '
-            docker login -u ${DOCKERHUB_USER} -p ${PASS}
-            cd /home/ubuntu/deployments/shopservice &&
-            docker-compose -f docker-compose.prod.yml pull &&
-            docker-compose -f docker-compose.prod.yml up -d
-          '
-          """
+          withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CREDENTIALS}", usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+            sh """
+            ssh -o StrictHostKeyChecking=no ubuntu@13.235.90.226 '
+              echo $PASS | docker login -u $USER --password-stdin &&
+              cd /home/ubuntu/deployments/shopservice &&
+              docker-compose -f docker-compose.prod.yml pull &&
+              docker-compose -f docker-compose.prod.yml up -d
+            '
+            """
+          }
         }
       }
     }
