@@ -39,7 +39,7 @@ pipeline {
 
     stage('Deploy to Production') {
       steps {
-        sshagent (credentials: ['ec2-prod-server']) {
+        sshagent (credentials: ['deploy-ssh-key']) {
           sh """
           ssh -o StrictHostKeyChecking=no ubuntu@13.235.90.226 '
             docker login -u ${DOCKERHUB_USER} -p ${PASS}
