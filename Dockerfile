@@ -14,7 +14,7 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY . .
 
-ENV DJANGO_SETTINGS_MODULE=shopService.settings
+ENV DJANGO_SETTINGS_MODULE=shop_service.settings
 ENV PORT=8002
 
 RUN python manage.py collectstatic --noinput || true
