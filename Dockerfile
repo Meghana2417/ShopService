@@ -14,9 +14,9 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY . .
 
-ENV DJANGO_SETTINGS_MODULE=shopproject.settings
+ENV DJANGO_SETTINGS_MODULE=shopService.settings
 ENV PORT=8002
 
 RUN python manage.py collectstatic --noinput || true
 
-CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn shopproject.wsgi:application --bind 0.0.0.0:${PORT} --workers 3"]
+CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn shopService.wsgi:application --bind 0.0.0.0:${PORT} --workers 3"]
