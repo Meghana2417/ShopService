@@ -1,22 +1,24 @@
 FROM python:3.12-slim
 
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+# Install GDAL and dependencies
+RUN apt-get update && apt-get install -y \
+    gdal-bin libgdal-dev python3-gdal \
+    && rm -rf /var/lib/apt/lists/*
 
+# Set working directory
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential libpq-dev \
- && rm -rf /var/lib/apt/lists/*
-
-COPY requirements.txt .
-RUN pip install --upgrade pip && pip install -r requirements.txt
-
+# Copy project files
 COPY . .
 
-ENV DJANGO_SETTINGS_MODULE=shop_service.settings
-ENV PORT=8002
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-RUN python manage.py collectstatic --noinput || true
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
 
-CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn shopService.wsgi:application --bind 0.0.0.0:${PORT} --workers 3"]
+# Expose Django port
+EXPOSE 8002
+
+# Start the app
+CMD ["gunicorn", "shop_service.wsgi:application", "--bind", "0.0.0.0:8002"]
