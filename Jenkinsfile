@@ -40,7 +40,7 @@ pipeline {
         sshagent (credentials: ['deploy-ssh-key']) {
           withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CREDENTIALS}", usernameVariable: 'USER', passwordVariable: 'PASS')]) {
             sh """
-            ssh -o StrictHostKeyChecking=no ubuntu@13.232.241.165 '
+            ssh -o StrictHostKeyChecking=no ubuntu@3.109.200.165 '
               echo "$PASS" | docker login -u "$USER" --password-stdin &&
               cd /home/ubuntu/deployments/shopservice &&
               docker-compose -f docker-compose.prod.yml pull &&
