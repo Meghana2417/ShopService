@@ -14,7 +14,7 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh "docker build --no-cache -t meghana1724/shopservice ."
+                sh "docker build --no-cache -t meghana1724/shopservice:latest ."
             }
         }
 
@@ -26,20 +26,20 @@ pipeline {
 
         stage('Docker Push') {
             steps {
-                sh "docker push meghana1724/shopservice"
+                sh "docker push meghana1724/shopservice:latest"
             }
         }
 
         stage('Deploy') {
-        steps {
-            sh '''
-            docker stop shopservice || true
-            docker rm shopservice || true
+            steps {
+                sh '''
+                docker stop shopservice || true
+                docker rm shopservice || true
 
-            docker pull meghana1724/shopservice:latest
+                docker pull meghana1724/shopservice:latest
 
-            docker run -d --name shopservice -p 8002:8002 meghana1724/shopservice:latest
-            '''
+                docker run -d --name shopservice -p 8002:8002 meghana1724/shopservice:latest
+                '''
             }
         }
     }
