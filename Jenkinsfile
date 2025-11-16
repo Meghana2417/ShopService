@@ -1,64 +1,46 @@
 pipeline {
-  agent any
+    agent any
 
-  environment {
-    DOCKERHUB_CREDENTIALS = 'docker-hub-creds'
-    DOCKERHUB_USER = 'meghana1724'
-    IMAGE_NAME = "${DOCKERHUB_USER}/shopservice"
-    SSH_CRED_ID = 'deploy-ssh-key'
-  }
-
-  stages {
-    stage('Checkout') {
-      steps {
-        checkout scm
-      }
+    environment {
+        DOCKER_CREDS = credentials('docker-hub')
     }
 
-    stage('Build Docker Image') {
-      steps {
-        sh "docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} ."
-      }
-    }
-
-    stage('Push to DockerHub') {
-      steps {
-        withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CREDENTIALS}", usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-          sh """
-          echo "$PASS" | docker login -u "$USER" --password-stdin
-          docker tag ${IMAGE_NAME}:${BUILD_NUMBER} ${IMAGE_NAME}:latest
-          docker push ${IMAGE_NAME}:${BUILD_NUMBER}
-          docker push ${IMAGE_NAME}:latest
-          docker logout
-          """
+    stages {
+        stage('Clone Repo') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Meghana2417/ShopService.git'
+            }
         }
-      }
-    }
 
-    stage('Deploy to Production') {
-      steps {
-        sshagent (credentials: ['deploy-ssh-key']) {
-          withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CREDENTIALS}", usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-            sh """
-            ssh -o StrictHostKeyChecking=no ubuntu@3.109.200.165 '
-              echo "$PASS" | docker login -u "$USER" --password-stdin &&
-              cd /home/ubuntu/deployments/shopservice &&
-              docker-compose -f docker-compose.prod.yml pull &&
-              docker-compose -f docker-compose.prod.yml up -d
-            '
-            """
-          }
+        stage('Docker Build') {
+            steps {
+                sh "docker build -t meghana1724/shopservice ."
+            }
         }
-      }
-    }
-  }
 
-  post {
-    success {
-      echo "✅ ShopService deployed successfully."
+        stage('Docker Login') {
+            steps {
+                sh 'echo "$DOCKER_CREDS_PSW" | docker login -u "$DOCKER_CREDS_USR" --password-stdin'
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                sh "docker push meghana1724/shopservice"
+            }
+        }
+
+        stage('Deploy') {
+        steps {
+            sh '''
+            docker stop shopservice || true
+            docker rm shopservice || true
+
+            docker pull meghana1724/shopservice:latest
+
+            docker run -d --name shopservice -p 8002:8002 meghana1724/shopservice:latest
+            '''
+            }
+        }
     }
-    failure {
-      echo "❌ Deployment failed."
-    }
-  }
 }
