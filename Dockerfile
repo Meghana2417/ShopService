@@ -1,22 +1,16 @@
-FROM python:3.10-slim
 
-# Install system dependencies for GDAL, GEOS, PROJ
-RUN apt-get update && apt-get install -y \
-    gdal-bin \
-    libgdal-dev \
-    && rm -rf /var/lib/apt/lists/*
+FROM osgeo/gdal:ubuntu-small-3.6.2
 
-
-# Set GDAL and GEOS environment variables
-ENV GDAL_LIBRARY_PATH=/usr/lib/libgdal.so
-ENV GEOS_LIBRARY_PATH=/usr/lib/libgeos_c.so
+# Install Python
+RUN apt-get update && apt-get install -y python3 python3-pip
 
 WORKDIR /app
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["gunicorn", "shop_service.wsgi:application", "--bind", "0.0.0.0:8002"]
+RUN python3 manage.py collectstatic --noinput
 
+CMD ["gunicorn", "shop_service.wsgi:application", "--bind", "0.0.0.0:8002"]
