@@ -1,24 +1,12 @@
-FROM python:3.12-slim
+FROM python:3.10-slim
 
-# Install GDAL and dependencies
-RUN apt-get update && apt-get install -y \
-    gdal-bin libgdal-dev python3-gdal \
-    && rm -rf /var/lib/apt/lists/*
-
-# Set working directory
 WORKDIR /app
 
-# Copy project files
-COPY . .
-
-# Install Python dependencies
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Set environment variables
-ENV PYTHONUNBUFFERED=1
+COPY . .
 
-# Expose Django port
-EXPOSE 8002
+RUN python manage.py collectstatic --noinput
 
-# Start the app
 CMD ["gunicorn", "shop_service.wsgi:application", "--bind", "0.0.0.0:8002"]
