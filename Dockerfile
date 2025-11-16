@@ -4,10 +4,8 @@ FROM python:3.10-slim
 RUN apt-get update && apt-get install -y \
     gdal-bin \
     libgdal-dev \
-    libgeos-dev \
-    proj-bin \
-    proj-data \
     && rm -rf /var/lib/apt/lists/*
+
 
 # Set GDAL and GEOS environment variables
 ENV GDAL_LIBRARY_PATH=/usr/lib/libgdal.so
