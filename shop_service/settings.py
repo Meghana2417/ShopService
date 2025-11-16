@@ -151,10 +151,10 @@ from ctypes import CDLL
 
 # Path to GDAL installation (adjust based on your system)
 #GDAL_LIBRARY_PATH = r"C:\OSGeo4W\bin\gdal311.dll"  # example path
-from django.contrib.gis.gdal import GDAL_LIBRARY_PATH
-
+#from django.contrib.gis.gdal import GDAL_LIBRARY_PATH
+GDAL_LIBRARY_PATH = os.getenv("GDAL_LIBRARY_PATH", "/usr/lib/libgdal.so")
 # Do NOT hardcode Windows DLL
-GDAL_LIBRARY_PATH = os.getenv("GDAL_LIBRARY_PATH", GDAL_LIBRARY_PATH)
+#GDAL_LIBRARY_PATH = os.getenv("GDAL_LIBRARY_PATH", GDAL_LIBRARY_PATH)
 
 
 # Ensure GDAL is loaded
