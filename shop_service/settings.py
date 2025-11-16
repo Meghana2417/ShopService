@@ -147,21 +147,22 @@ REST_FRAMEWORK = {
 
 
 import os
-from ctypes import CDLL
+GDAL_LIBRARY_PATH = os.getenv("GDAL_LIBRARY_PATH", "")
+#from ctypes import CDLL
 
 # Path to GDAL installation (adjust based on your system)
 #GDAL_LIBRARY_PATH = r"C:\OSGeo4W\bin\gdal311.dll"  # example path
 #from django.contrib.gis.gdal import GDAL_LIBRARY_PATH
-GDAL_LIBRARY_PATH = os.getenv("GDAL_LIBRARY_PATH", "/usr/lib/libgdal.so")
+#GDAL_LIBRARY_PATH = os.getenv("GDAL_LIBRARY_PATH", "/usr/lib/libgdal.so")
 # Do NOT hardcode Windows DLL
 #GDAL_LIBRARY_PATH = os.getenv("GDAL_LIBRARY_PATH", GDAL_LIBRARY_PATH)
 
 
 # Ensure GDAL is loaded
-try:
-    CDLL(GDAL_LIBRARY_PATH)
-except OSError as e:
-    raise RuntimeError(f"Could not load GDAL library: {e}")
+#try:
+ #   CDLL(GDAL_LIBRARY_PATH)
+#except OSError as e:
+  #  raise RuntimeError(f"Could not load GDAL library: {e}")
 
 
 JWT_SECRET_KEY = "django-insecure-%$h2nuhjliy!w4z1*9o*fm6r-38@sntd(z&j-s0uztl($_epx@"  # should be same as Auth Service
