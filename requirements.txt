@@ -6,3 +6,4 @@ gunicorn
 requests
 Pillow
 whitenoise
+PyJWT==2.8.0
