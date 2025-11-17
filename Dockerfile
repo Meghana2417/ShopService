@@ -1,12 +1,10 @@
 
-
 FROM python:3.10-slim
 
-ARG DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
 
 RUN apt-get update && apt-get install -y \
-    software-properties-common \
     gdal-bin \
     libgdal-dev \
     libgeos-dev \
@@ -18,11 +16,12 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 COPY requirements.txt .
-
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN python3 manage.py collectstatic --noinput
+RUN python manage.py collectstatic --noinput
 
 CMD ["gunicorn", "shop_service.wsgi:application", "--bind", "0.0.0.0:8002"]
+
+
