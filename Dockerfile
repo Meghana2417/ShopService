@@ -1,8 +1,19 @@
 
 
-FROM ghcr.io/osgeo/gdal:ubuntu-small-3.8.0
+FROM python:3.10-slim
 
-RUN apt-get update && apt-get install -y python3 python3-pip tzdata && rm -rf /var/lib/apt/lists/*
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=UTC
+
+RUN apt-get update && apt-get install -y \
+    software-properties-common \
+    gdal-bin \
+    libgdal-dev \
+    libgeos-dev \
+    proj-bin \
+    proj-data \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
